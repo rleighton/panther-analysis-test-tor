@@ -1,15 +1,18 @@
 """Utility functions provided to policies and rules during execution."""
 import os
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 from ipaddress import ip_network
 import boto3
 
 # Default to us-east-1 so this doesn't fail during CI (env variable is not always present in CI)
 # Used to communicate directly with the Panther resource data store
 # pylint: disable=no-member
-TABLE = boto3.resource('dynamodb',
-                       os.environ.get('AWS_DEFAULT_REGION',
-                                      'us-east-1')).Table('panther-resources')
+RESOURCES_TABLE = boto3.resource(
+    'dynamodb', os.environ.get('AWS_DEFAULT_REGION',
+                               'us-east-1')).Table('panther-resources')
+KV_TABLE = boto3.resource('dynamodb',
+                          os.environ.get('AWS_DEFAULT_REGION',
+                                         'us-east-1')).Table('panther-kv-store')
 # pylint: enable=no-member
 
 
@@ -19,6 +22,23 @@ class BadLookup(Exception):
 
 class PantherBadInput(Exception):
     """Error returned when a Panther helper function is provided bad input."""
+
+
+def counter(key: str) -> Tuple[int, Exception]:
+    response = KV_TABLE.update_item(
+        Key={'key': {
+            'S': key
+        }},
+        ReturnValues='UPDATED_NEW',
+        UpdateExpression='SET count = count + :incr',
+        ExpressionAttributeValues={':incr': {
+            'N': '1'
+        }},
+    )
+    if 'Attributes' not in response:
+        return 0, BadLookup('Key does not exist')
+
+    return response['Attributes']['count']['N'], None
 
 
 def get_s3_arn_by_name(name: str) -> str:
@@ -35,7 +55,7 @@ def s3_lookup_by_name(name: str) -> Dict[str, Any]:
 
 def dynamo_lookup(key: str) -> Dict[str, Any]:
     """Make a dynamodb GetItem API call."""
-    return TABLE.get_item(Key={'id': key})
+    return RESOURCES_TABLE.get_item(Key={'id': key})
 
 
 def resource_lookup(resource_id: str) -> Dict[str, Any]:
