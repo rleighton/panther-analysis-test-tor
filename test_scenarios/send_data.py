@@ -162,14 +162,11 @@ if __name__ == '__main__':
     parser.add_argument('--file',
                         help='the yml file with test data',
                         required=True)
-    parser.add_argument('--account-id',
-                        help='the AWS account ID of the Panther deployment',
-                        required=True)
     parser.add_argument('--bucket-name',
                         help='the S3 bucket name of the Panther source',
                         required=True)
     parser.add_argument('--region',
-                        help='the region of the SQS Queue of the Panther source',
+                        help='the region of the S3 Bucket of the Panther source',
                         required=True)
     parser.add_argument('--compromise-datetime',
                         help='the datetime of the compromise UTC in iso format',
