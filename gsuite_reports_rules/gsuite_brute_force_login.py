@@ -1,10 +1,4 @@
-from panther_base_helpers import gsuite_details_lookup as details_lookup
-from panther_oss_helpers import evaluate_threshold
-
-# TODO change to native thresholding once support is added
-# tentatively slated for 1.7
-THRESH = 10
-THRESH_TTL = 600  # 10 minutes
+from panther_base_helpers import deep_get, gsuite_details_lookup
 
 
 def rule(event):
