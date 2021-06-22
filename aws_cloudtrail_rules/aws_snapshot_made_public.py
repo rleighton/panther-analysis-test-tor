@@ -27,3 +27,11 @@ def rule(event):
         return "all" in deep_get(event, "requestParameters", "valuesToAdd", default=[])
 
     return False
+
+
+def title(event):
+    if event.get("eventName") == "ModifySnapshotAttribute":
+        aws_service = "EC2"
+    elif event.get("eventName") == "ModifyDBClusterSnapshotAttribute":
+        aws_service = "RDS"
+    return f"An {aws_service} snapshot was made public"
