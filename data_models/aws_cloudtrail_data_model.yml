@@ -16,3 +16,5 @@ Mappings:
     Path: userAgent
   - Name: user
     Path: $.responseElements.user.userName
+  - Name: account_id
+    Path: recipientAccountId

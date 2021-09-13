@@ -412,9 +412,15 @@ def add_parse_delay(event, context: dict) -> dict:
 
 
 # check for presence of user id in KV store for the purpose of modifying severity or suppressing
-# alerts based on expected actions for a new user
+# alerts based on expected actions for a new user or account.
 def check_new_user(user_id):
-    return bool(get_string_set(user_id))
+    """
+    Searches DynamoDB for stored user_id or account_id string stored by indicator creation
+    rules for new user / account creation
+    """
+    if isinstance(user_id, str) and user_id != "":
+        return bool(get_string_set(user_id))
+    return False
 
 
 def _test_kv_store():

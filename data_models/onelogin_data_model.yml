@@ -18,3 +18,5 @@ Mappings:
     Path: user_name
   - Name: user_agent
     Path: user_agent
+  - Name: account_id
+    Path: user_id
