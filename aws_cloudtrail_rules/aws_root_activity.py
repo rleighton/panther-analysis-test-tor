@@ -19,6 +19,8 @@ def dedup(event):
         event.get("sourceIPAddress", "<UNKNOWN_IP>")
         + ":"
         + lookup_aws_account_name(event.get("recipientAccountId"))
+        + ":"
+        + str(event.get("readOnly"))
     )
 
 
@@ -40,3 +42,9 @@ def alert_context(event):
         "eventTime": event.get("eventTime"),
         "mfaUsed": deep_get(event, "additionalEventData", "MFAUsed"),
     }
+
+
+def severity(event):
+    if event.get("readOnly") == True:
+        return "LOW"
+    return "HIGH"
